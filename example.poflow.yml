@@ -1,0 +1,11 @@
+# Example poflow configuration file
+# Copy this to poflow.yml in your project root and adjust the paths
+
+# Base path for gettext files
+# The tool will resolve .po files as: {gettext_path}/{lang}/LC_MESSAGES/default.po
+gettext_path: "priv/gettext"
+
+# Examples:
+# For Phoenix/Elixir projects: "priv/gettext"
+# For Rails projects: "config/locales"
+# For custom setup: "translations" or any other path
