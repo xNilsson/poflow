@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/nille/poflow/internal/config"
 	"github.com/nille/poflow/internal/output"
 	"github.com/nille/poflow/internal/parser"
 	"github.com/spf13/cobra"
 )
 
 var (
-	listEmptyLimit int
+	listEmptyLimit    int
+	listEmptyLanguage string
 )
 
 var listemptyCmd = &cobra.Command{
@@ -30,6 +32,7 @@ Examples:
 func init() {
 	rootCmd.AddCommand(listemptyCmd)
 	listemptyCmd.Flags().IntVar(&listEmptyLimit, "limit", 0, "limit number of entries (0 = no limit)")
+	listemptyCmd.Flags().StringVar(&listEmptyLanguage, "language", "", "language code (uses config to resolve path)")
 }
 
 func runListEmpty(cmd *cobra.Command, args []string) error {
@@ -37,7 +40,22 @@ func runListEmpty(cmd *cobra.Command, args []string) error {
 	var reader *os.File
 	var err error
 
-	if len(args) > 0 {
+	// Handle --language flag
+	if listEmptyLanguage != "" {
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("failed to load config: %w", err)
+		}
+		path, err := cfg.ResolvePOPath(listEmptyLanguage)
+		if err != nil {
+			return fmt.Errorf("failed to resolve path: %w", err)
+		}
+		reader, err = os.Open(path)
+		if err != nil {
+			return fmt.Errorf("failed to open file: %w", err)
+		}
+		defer reader.Close()
+	} else if len(args) > 0 {
 		// Read from file
 		reader, err = os.Open(args[0])
 		if err != nil {

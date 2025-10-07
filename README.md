@@ -14,11 +14,41 @@ A lightweight CLI tool for working with GNU gettext `.po` translation files.
 - ⚙️ **Configurable**: Project-specific config files for easy workflow
 - 📦 **Portable**: Single Go binary with no dependencies
 
+## Documentation
+
+- **[Installation Guide](INSTALLATION.md)** - Complete installation and setup instructions
+- **[Tutorial](TUTORIAL.md)** - Step-by-step guide with real examples
+- **[README](README.md)** - This file, full reference documentation
+
+## Quick Start
+
+```bash
+# 1. Install poflow
+go install github.com/nille/poflow@latest
+
+# 2. Initialize in your project
+cd /path/to/your/project
+poflow init
+
+# 3. Start using poflow
+poflow listempty --language sv
+```
+
+For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
+
+For a guided tutorial, see [TUTORIAL.md](TUTORIAL.md).
+
 ## Installation
 
-### Download Binary (Recommended)
+### Method 1: Go Install (Recommended)
 
-Download the latest release for your platform from the [releases page](https://github.com/nille/poflow/releases).
+```bash
+go install github.com/nille/poflow@latest
+```
+
+### Method 2: Download Binary
+
+Download from the [releases page](https://github.com/nille/poflow/releases):
 
 ```bash
 # macOS/Linux
@@ -27,7 +57,7 @@ chmod +x poflow
 sudo mv poflow /usr/local/bin/
 ```
 
-### Build from Source
+### Method 3: Build from Source
 
 ```bash
 git clone https://github.com/nille/poflow.git
@@ -36,17 +66,16 @@ go build -o poflow .
 sudo mv poflow /usr/local/bin/
 ```
 
-### Using Go Install
+See [INSTALLATION.md](INSTALLATION.md) for complete setup instructions.
+
+## Basic Usage
 
 ```bash
-go install github.com/nille/poflow@latest
-```
+# Initialize config in your project
+poflow init
 
-## Quick Start
-
-```bash
 # List all untranslated entries
-poflow listempty priv/gettext/sv/LC_MESSAGES/default.po
+poflow listempty --language sv
 
 # List first 10 untranslated entries in JSON format
 poflow listempty --json --limit 10 translations.po
@@ -64,7 +93,25 @@ poflow translate --language sv translations.txt
 
 ## Configuration
 
-Create a `poflow.yml` file in your project root to simplify commands:
+### Quick Setup with `poflow init`
+
+The easiest way to configure poflow:
+
+```bash
+cd your_project
+poflow init
+```
+
+This auto-detects your project structure and creates `poflow.yml` with appropriate settings.
+
+**Custom path:**
+```bash
+poflow init --path translations
+```
+
+### Manual Configuration
+
+Create a `poflow.yml` file in your project root:
 
 ```yaml
 # poflow.yml
@@ -108,6 +155,41 @@ gettext_path: "translations"
 ```
 
 ## Commands
+
+### `init` - Initialize Configuration
+
+Create a `poflow.yml` config file with auto-detected settings.
+
+```bash
+# Auto-detect project structure
+poflow init
+
+# Specify custom path
+poflow init --path translations
+
+# Force overwrite existing config
+poflow init --path priv/gettext
+```
+
+**Output:**
+```
+Detected Phoenix/Elixir project
+✓ Created poflow.yml
+✓ Configured gettext_path: priv/gettext
+
+Next steps:
+  1. Edit poflow.yml if needed
+  2. Run: poflow listempty --language <lang>
+  3. See: poflow --help for all commands
+```
+
+**What it detects:**
+- Phoenix/Elixir projects (`mix.exs` → `priv/gettext`)
+- Rails projects (`config/application.rb` → `config/locales`)
+- Node.js projects (`package.json` → `translations`)
+- Existing gettext directory structures
+
+See [INSTALLATION.md](INSTALLATION.md) for more setup details.
 
 ### `listempty` - List Untranslated Entries
 
@@ -487,6 +569,12 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Author
 
 Created by Nille ([@nille](https://github.com/nille))
+
+## Documentation
+
+- **[INSTALLATION.md](INSTALLATION.md)** - Complete installation and setup guide
+- **[TUTORIAL.md](TUTORIAL.md)** - Step-by-step tutorial with real examples
+- **[README.md](README.md)** - This file, full reference documentation
 
 ## Links
 
