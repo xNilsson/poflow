@@ -718,7 +718,7 @@ Now that you know the basics:
 ## Getting Help
 
 - Run `poflow [command] --help` for detailed command help
-- File issues: https://github.com/nille/poflow/issues
+- File issues: https://github.com/xnilsson/poflow/issues
 - Read the docs: [README.md](README.md)
 
 ---

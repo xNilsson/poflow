@@ -1,4 +1,4 @@
-module github.com/nille/poflow
+module github.com/xnilsson/poflow
 
 go 1.23.6
 

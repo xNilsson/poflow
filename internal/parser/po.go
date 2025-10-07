@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/nille/poflow/internal/model"
+	"github.com/xnilsson/poflow/internal/model"
 )
 
 // Parser streams .po file entries one by one without loading entire file into memory

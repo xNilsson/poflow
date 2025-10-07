@@ -261,7 +261,7 @@ go build -o poflow .
 
 ### Import Errors
 - Run `go mod tidy`
-- Check that all imports use `github.com/nille/poflow/...`
+- Check that all imports use `github.com/xnilsson/poflow/...`
 
 ## Resources
 

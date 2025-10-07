@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/nille/poflow/internal/model"
+	"github.com/xnilsson/poflow/internal/model"
 )
 
 // OutputEntry outputs a single entry in text or JSON format

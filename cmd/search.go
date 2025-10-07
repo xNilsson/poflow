@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/nille/poflow/internal/config"
-	"github.com/nille/poflow/internal/output"
-	"github.com/nille/poflow/internal/parser"
+	"github.com/xnilsson/poflow/internal/config"
+	"github.com/xnilsson/poflow/internal/output"
+	"github.com/xnilsson/poflow/internal/parser"
 	"github.com/spf13/cobra"
 )
 

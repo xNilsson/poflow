@@ -6,7 +6,7 @@ This guide covers installing and setting up **poflow** for your project.
 
 ```bash
 # 1. Install poflow
-go install github.com/nille/poflow@latest
+go install github.com/xnilsson/poflow@latest
 
 # 2. Navigate to your project
 cd /path/to/your/project
@@ -25,7 +25,7 @@ poflow listempty --language sv
 If you have Go installed:
 
 ```bash
-go install github.com/nille/poflow@latest
+go install github.com/xnilsson/poflow@latest
 ```
 
 This installs poflow to your `$GOPATH/bin` directory (usually `~/go/bin`).
@@ -39,25 +39,25 @@ export PATH="$PATH:$(go env GOPATH)/bin"
 
 ### Method 2: Download Pre-built Binary
 
-Download the latest release for your platform from the [releases page](https://github.com/nille/poflow/releases).
+Download the latest release for your platform from the [releases page](https://github.com/xnilsson/poflow/releases).
 
 **macOS (Intel):**
 ```bash
-curl -L https://github.com/nille/poflow/releases/latest/download/poflow-darwin-amd64 -o poflow
+curl -L https://github.com/xnilsson/poflow/releases/latest/download/poflow-darwin-amd64 -o poflow
 chmod +x poflow
 sudo mv poflow /usr/local/bin/
 ```
 
 **macOS (Apple Silicon):**
 ```bash
-curl -L https://github.com/nille/poflow/releases/latest/download/poflow-darwin-arm64 -o poflow
+curl -L https://github.com/xnilsson/poflow/releases/latest/download/poflow-darwin-arm64 -o poflow
 chmod +x poflow
 sudo mv poflow /usr/local/bin/
 ```
 
 **Linux:**
 ```bash
-curl -L https://github.com/nille/poflow/releases/latest/download/poflow-linux-amd64 -o poflow
+curl -L https://github.com/xnilsson/poflow/releases/latest/download/poflow-linux-amd64 -o poflow
 chmod +x poflow
 sudo mv poflow /usr/local/bin/
 ```
@@ -69,7 +69,7 @@ Download `poflow-windows-amd64.exe` from the releases page and add it to your PA
 
 ```bash
 # Clone the repository
-git clone https://github.com/nille/poflow.git
+git clone https://github.com/xnilsson/poflow.git
 cd poflow
 
 # Build the binary
@@ -410,7 +410,7 @@ Use a YAML validator if needed: https://www.yamllint.com/
 ### Update via Go
 
 ```bash
-go install github.com/nille/poflow@latest
+go install github.com/xnilsson/poflow@latest
 ```
 
 ### Update via Binary
@@ -418,7 +418,7 @@ go install github.com/nille/poflow@latest
 Download the latest release and replace your existing binary:
 
 ```bash
-curl -L https://github.com/nille/poflow/releases/latest/download/poflow-$(uname -s)-$(uname -m) -o poflow
+curl -L https://github.com/xnilsson/poflow/releases/latest/download/poflow-$(uname -s)-$(uname -m) -o poflow
 chmod +x poflow
 sudo mv poflow /usr/local/bin/
 ```
@@ -463,7 +463,7 @@ Now that poflow is installed and configured:
 
 - Run `poflow --help` for command overview
 - Run `poflow [command] --help` for detailed help on any command
-- File issues at: https://github.com/nille/poflow/issues
+- File issues at: https://github.com/xnilsson/poflow/issues
 - Read the docs: [README.md](README.md)
 
 ---

@@ -24,7 +24,7 @@ A lightweight CLI tool for working with GNU gettext `.po` translation files.
 
 ```bash
 # 1. Install poflow
-go install github.com/nille/poflow@latest
+go install github.com/xnilsson/poflow@latest
 
 # 2. Initialize in your project
 cd /path/to/your/project
@@ -43,16 +43,16 @@ For a guided tutorial, see [TUTORIAL.md](TUTORIAL.md).
 ### Method 1: Go Install (Recommended)
 
 ```bash
-go install github.com/nille/poflow@latest
+go install github.com/xnilsson/poflow@latest
 ```
 
 ### Method 2: Download Binary
 
-Download from the [releases page](https://github.com/nille/poflow/releases):
+Download from the [releases page](https://github.com/xnilsson/poflow/releases):
 
 ```bash
 # macOS/Linux
-curl -L https://github.com/nille/poflow/releases/latest/download/poflow-$(uname -s)-$(uname -m) -o poflow
+curl -L https://github.com/xnilsson/poflow/releases/latest/download/poflow-$(uname -s)-$(uname -m) -o poflow
 chmod +x poflow
 sudo mv poflow /usr/local/bin/
 ```
@@ -60,7 +60,7 @@ sudo mv poflow /usr/local/bin/
 ### Method 3: Build from Source
 
 ```bash
-git clone https://github.com/nille/poflow.git
+git clone https://github.com/xnilsson/poflow.git
 cd poflow
 go build -o poflow .
 sudo mv poflow /usr/local/bin/
@@ -590,7 +590,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Author
 
-Created by Nille ([@nille](https://github.com/nille))
+Created by Nille ([@xnilsson](https://github.com/xnilsson))
 
 ## Documentation
 
@@ -632,8 +632,8 @@ Initial release with core features:
 
 ## Links
 
-- [GitHub Repository](https://github.com/nille/poflow)
-- [Issue Tracker](https://github.com/nille/poflow/issues)
+- [GitHub Repository](https://github.com/xnilsson/poflow)
+- [Issue Tracker](https://github.com/xnilsson/poflow/issues)
 - [GNU gettext Documentation](https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html)
 
 ---

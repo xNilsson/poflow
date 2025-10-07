@@ -1,6 +1,6 @@
 package main
 
-import "github.com/nille/poflow/cmd"
+import "github.com/xnilsson/poflow/cmd"
 
 func main() {
 	cmd.Execute()

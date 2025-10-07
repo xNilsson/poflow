@@ -1,4 +1,0 @@
-# Test translations for Swedish
-Sign In = Logga in
-Sign Out = Logga ut
-Welcome = Välkommen
