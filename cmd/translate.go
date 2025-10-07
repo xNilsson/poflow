@@ -227,6 +227,16 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	// Show summary (unless quiet or stdout mode with non-JSON output)
+	if !quiet && !translateFlags.stdout {
+		fmt.Fprintf(os.Stderr, "\nUpdated %d translation(s) in %s:\n", updated, poFilePath)
+		for _, msgid := range updatedMsgIDs {
+			fmt.Fprintf(os.Stderr, "  ✓ %s\n", msgid)
+		}
+	} else if !quiet && translateFlags.stdout {
+		fmt.Fprintf(os.Stderr, "\nUpdated %d entries\n", updated)
+	}
+
 	// Check for unfound translations
 	if len(translations) > 0 {
 		for msgid := range translations {
@@ -238,21 +248,14 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 			for _, msgid := range notFound {
 				fmt.Fprintf(os.Stderr, "  - %s\n", msgid)
 			}
+			fmt.Fprintf(os.Stderr, "\nTo debug, try searching for similar entries:\n")
+			fmt.Fprintf(os.Stderr, "  poflow search \"<partial-text>\" --language %s\n", translateFlags.language)
+			fmt.Fprintf(os.Stderr, "  poflow search --re \"<pattern>\" --language %s\n", translateFlags.language)
 		}
 
 		if !translateFlags.force {
 			return fmt.Errorf("some translations not applied (use --force to ignore)")
 		}
-	}
-
-	// Show summary (unless quiet or stdout mode with non-JSON output)
-	if !quiet && !translateFlags.stdout {
-		fmt.Fprintf(os.Stderr, "\nUpdated %d translation(s) in %s:\n", updated, poFilePath)
-		for _, msgid := range updatedMsgIDs {
-			fmt.Fprintf(os.Stderr, "  ✓ %s\n", msgid)
-		}
-	} else if !quiet && translateFlags.stdout {
-		fmt.Fprintf(os.Stderr, "\nUpdated %d entries\n", updated)
 	}
 
 	return nil
