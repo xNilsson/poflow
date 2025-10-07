@@ -1,19 +1,19 @@
 # Phase 3: Translation
 
-**Status:** Not Started
+**Status:** ✅ COMPLETED
 **Goal:** Implement the translate command to merge translations into .po files.
 
 ## Tasks
 
-- [ ] Parse translation input format (`msgid = msgstr`)
-- [ ] Implement translate command with stdin support
-- [ ] Implement translate command with file input
-- [ ] Add --language flag for config-based path resolution
-- [ ] Merge translations into existing .po file
-- [ ] Preserve comments and references
-- [ ] Handle missing msgids gracefully
-- [ ] Support both direct file path and config-based resolution
-- [ ] Write tests for translation merging
+- [x] Parse translation input format (`msgid = msgstr`)
+- [x] Implement translate command with stdin support
+- [x] Implement translate command with file input
+- [x] Add --language flag for config-based path resolution
+- [x] Merge translations into existing .po file
+- [x] Preserve comments and references
+- [x] Handle missing msgids gracefully
+- [x] Support both direct file path and config-based resolution
+- [x] Write tests for translation merging
 
 ## Usage Patterns
 
