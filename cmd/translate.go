@@ -3,10 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/nille/poflow/internal/config"
-	"github.com/nille/poflow/internal/model"
+	"github.com/nille/poflow/internal/output"
 	"github.com/nille/poflow/internal/parser"
 	"github.com/spf13/cobra"
 )
@@ -130,10 +129,8 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 		}
 
 		// Output the entry (possibly updated)
-		if jsonOutput {
-			outputEntryJSON(entry)
-		} else {
-			outputEntryText(entry)
+		if err := output.OutputEntry(entry, jsonOutput); err != nil {
+			return err
 		}
 	}
 
@@ -166,46 +163,3 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func outputEntryJSON(entry *model.MsgEntry) {
-	// Output entry as JSON (simplified, could use encoding/json)
-	comments := ""
-	if len(entry.Comments) > 0 {
-		comments = fmt.Sprintf(`,"comments":["%s"]`, strings.Join(entry.Comments, `","`))
-	}
-	refs := ""
-	if len(entry.References) > 0 {
-		refs = fmt.Sprintf(`,"references":["%s"]`, strings.Join(entry.References, `","`))
-	}
-
-	fmt.Printf(`{"msgid":%q,"msgstr":%q%s%s}`+"\n", entry.MsgID, entry.MsgStr, comments, refs)
-}
-
-func outputEntryText(entry *model.MsgEntry) {
-	// Output comments
-	for _, comment := range entry.Comments {
-		fmt.Println(comment)
-	}
-	// Output references
-	for _, ref := range entry.References {
-		fmt.Println(ref)
-	}
-	// Output msgid
-	if strings.Contains(entry.MsgID, "\n") {
-		fmt.Println("msgid \"\"")
-		for _, line := range strings.Split(entry.MsgID, "\n") {
-			fmt.Printf("\"%s\\n\"\n", line)
-		}
-	} else {
-		fmt.Printf("msgid \"%s\"\n", entry.MsgID)
-	}
-	// Output msgstr
-	if strings.Contains(entry.MsgStr, "\n") {
-		fmt.Println("msgstr \"\"")
-		for _, line := range strings.Split(entry.MsgStr, "\n") {
-			fmt.Printf("\"%s\\n\"\n", line)
-		}
-	} else {
-		fmt.Printf("msgstr \"%s\"\n", entry.MsgStr)
-	}
-	fmt.Println()
-}

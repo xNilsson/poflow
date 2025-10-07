@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
+	"github.com/nille/poflow/internal/output"
 	"github.com/nille/poflow/internal/parser"
 	"github.com/spf13/cobra"
 )
@@ -74,21 +74,8 @@ func runListEmpty(cmd *cobra.Command, args []string) error {
 		}
 
 		// Output entry
-		if jsonOutput {
-			data, err := json.Marshal(entry)
-			if err != nil {
-				return fmt.Errorf("failed to marshal JSON: %w", err)
-			}
-			fmt.Println(string(data))
-		} else {
-			fmt.Printf("msgid \"%s\"\n", entry.MsgID)
-			fmt.Printf("msgstr \"%s\"\n", entry.MsgStr)
-			if len(entry.References) > 0 {
-				for _, ref := range entry.References {
-					fmt.Printf("#: %s\n", ref)
-				}
-			}
-			fmt.Println()
+		if err := output.OutputEntry(entry, jsonOutput); err != nil {
+			return err
 		}
 
 		count++

@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"regexp"
 	"strings"
 
-	"github.com/nille/poflow/internal/model"
+	"github.com/nille/poflow/internal/output"
 	"github.com/nille/poflow/internal/parser"
 	"github.com/spf13/cobra"
 )
@@ -98,10 +97,8 @@ func runSearchValue(cmd *cobra.Command, args []string) error {
 		}
 
 		// Output the entry
-		if jsonOutput {
-			outputJSONValue(*entry)
-		} else {
-			outputTextValue(*entry)
+		if err := output.OutputEntry(entry, jsonOutput); err != nil {
+			return err
 		}
 
 		count++
@@ -117,22 +114,3 @@ func runSearchValue(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func outputJSONValue(entry model.MsgEntry) {
-	data, _ := json.Marshal(entry)
-	fmt.Println(string(data))
-}
-
-func outputTextValue(entry model.MsgEntry) {
-	// Output comments and references
-	for _, comment := range entry.Comments {
-		fmt.Println(comment)
-	}
-	for _, ref := range entry.References {
-		fmt.Printf("#: %s\n", ref)
-	}
-
-	// Output msgid and msgstr
-	fmt.Printf("msgid \"%s\"\n", entry.MsgID)
-	fmt.Printf("msgstr \"%s\"\n", entry.MsgStr)
-	fmt.Println()
-}
