@@ -1,0 +1,499 @@
+# poflow
+
+A lightweight CLI tool for working with GNU gettext `.po` translation files.
+
+**poflow** helps developers, translators, and LLMs navigate large `.po` files — searching, listing, and updating translation entries in a structured, automatable way.
+
+## Features
+
+- 🚀 **Fast**: Streaming parser processes files line by line (no in-memory AST)
+- 🔍 **Powerful search**: Search by msgid or msgstr with regex support
+- 📝 **List untranslated**: Quickly find entries that need translation
+- 🔄 **Merge translations**: Apply translations from text files back to .po files
+- 🤖 **LLM-friendly**: JSON output and clear structure for automation
+- ⚙️ **Configurable**: Project-specific config files for easy workflow
+- 📦 **Portable**: Single Go binary with no dependencies
+
+## Installation
+
+### Download Binary (Recommended)
+
+Download the latest release for your platform from the [releases page](https://github.com/nille/poflow/releases).
+
+```bash
+# macOS/Linux
+curl -L https://github.com/nille/poflow/releases/latest/download/poflow-$(uname -s)-$(uname -m) -o poflow
+chmod +x poflow
+sudo mv poflow /usr/local/bin/
+```
+
+### Build from Source
+
+```bash
+git clone https://github.com/nille/poflow.git
+cd poflow
+go build -o poflow .
+sudo mv poflow /usr/local/bin/
+```
+
+### Using Go Install
+
+```bash
+go install github.com/nille/poflow@latest
+```
+
+## Quick Start
+
+```bash
+# List all untranslated entries
+poflow listempty priv/gettext/sv/LC_MESSAGES/default.po
+
+# List first 10 untranslated entries in JSON format
+poflow listempty --json --limit 10 translations.po
+
+# Search for entries by msgid
+poflow search "Welcome" translations.po
+poflow search --re "^Sign" translations.po
+
+# Search for entries by msgstr (translation)
+poflow searchvalue "Välkommen" translations.po
+
+# Apply translations from a file
+poflow translate --language sv translations.txt
+```
+
+## Configuration
+
+Create a `poflow.yml` file in your project root to simplify commands:
+
+```yaml
+# poflow.yml
+gettext_path: "priv/gettext"
+```
+
+With this config, poflow resolves `.po` files as:
+```
+{gettext_path}/{lang}/LC_MESSAGES/default.po
+```
+
+### Config File Locations
+
+poflow searches for config files in this order:
+
+1. `./poflow.yml` (current directory)
+2. `./poflow.json` (current directory)
+3. `~/.config/poflow/config.yml` (user home)
+
+You can also specify a config file explicitly:
+
+```bash
+poflow --config /path/to/config.yml listempty
+```
+
+### Config Examples
+
+**Phoenix/Elixir projects:**
+```yaml
+gettext_path: "priv/gettext"
+```
+
+**Rails projects:**
+```yaml
+gettext_path: "config/locales"
+```
+
+**Custom setup:**
+```yaml
+gettext_path: "translations"
+```
+
+## Commands
+
+### `listempty` - List Untranslated Entries
+
+List all entries with empty translations (`msgstr`).
+
+```bash
+# List all empty entries
+poflow listempty file.po
+
+# JSON output (one entry per line)
+poflow listempty --json file.po
+
+# Limit to first 10 entries
+poflow listempty --limit 10 file.po
+
+# Use config file to resolve path
+poflow listempty --language sv --json
+
+# From stdin
+cat file.po | poflow listempty
+```
+
+**Output format:**
+
+Plain text:
+```
+msgid "Sign In"
+msgstr ""
+
+msgid "Sign Out"
+msgstr ""
+```
+
+JSON (`--json`):
+```json
+{"msgid":"Sign In","msgstr":""}
+{"msgid":"Sign Out","msgstr":""}
+```
+
+### `search` - Search by msgid
+
+Search for translation entries where the msgid matches a pattern.
+
+```bash
+# Plain substring search (case-insensitive)
+poflow search "Welcome" file.po
+
+# Regex search
+poflow search --re "^Login" file.po
+
+# JSON output
+poflow search --json "error" file.po
+
+# Limit results
+poflow search --limit 5 "button" file.po
+
+# From stdin
+cat file.po | poflow search "Welcome"
+```
+
+### `searchvalue` - Search by msgstr
+
+Search for translation entries where the msgstr (translation) matches a pattern.
+
+```bash
+# Plain substring search
+poflow searchvalue "Välkommen" file.po
+
+# Regex search
+poflow searchvalue --re "^Tack" file.po
+
+# JSON output
+poflow searchvalue --json "fel" file.po
+
+# From stdin
+cat file.po | poflow searchvalue "error"
+```
+
+### `translate` - Merge Translations
+
+Apply translations from a text file into a `.po` file.
+
+**Translation file format (`translations.txt`):**
+```
+Sign In = Logga in
+Sign Out = Logga ut
+Welcome = Välkommen
+```
+
+**Usage:**
+
+```bash
+# Using config file (recommended)
+poflow translate --language sv translations.txt
+
+# Direct file path
+poflow translate file.po < translations.txt > file_new.po
+
+# From stdin
+echo "Sign In = Logga in" | poflow translate --language sv
+
+# Force mode (continue even if msgid not found)
+poflow translate --force --language sv translations.txt
+```
+
+**How it works:**
+
+1. Reads the original `.po` file
+2. Parses translation pairs from input
+3. Updates matching msgid entries with new msgstr values
+4. Outputs updated `.po` file to stdout
+
+## Global Flags
+
+All commands support these flags:
+
+- `--json` - Output in JSON format (one entry per line)
+- `--config <file>` - Specify config file path
+- `--quiet` - Suppress progress output
+
+## Using poflow with LLMs
+
+poflow is designed to be LLM-friendly with structured JSON output and clear commands.
+
+### Recommended Workflow
+
+1. **List untranslated strings:**
+
+```bash
+poflow listempty --json --limit 20 --language sv
+```
+
+2. **Ask your LLM to translate the entries:**
+
+Send the JSON output to an LLM with a prompt like:
+
+> "Please translate these English strings to Swedish. The input is JSON with msgid and msgstr fields. Output translations in the format: 'English text = Swedish translation' (one per line)."
+
+3. **Save translations to a file:**
+
+Save the LLM's output to `translations.txt`:
+```
+Sign In = Logga in
+Sign Out = Logga ut
+Welcome = Välkommen
+```
+
+4. **Apply translations:**
+
+```bash
+poflow translate --language sv translations.txt
+```
+
+### Example LLM Prompt
+
+```
+Please translate these English strings to Swedish:
+
+[paste JSON output from poflow listempty --json]
+
+Output format (one per line):
+English = Swedish
+
+Keep technical terms, placeholders like %{name}, and formatting intact.
+```
+
+### Why JSON Output?
+
+- **Structured**: Easy to parse programmatically
+- **Line-delimited**: One entry per line for streaming
+- **Complete**: Includes msgid, msgstr, comments, and references
+- **Deterministic**: Consistent output for reliable automation
+
+### Programmatic Usage
+
+```bash
+# Count untranslated entries
+poflow listempty --json file.po | wc -l
+
+# Extract just the msgids
+poflow listempty --json file.po | jq -r .msgid
+
+# Filter entries by reference
+poflow listempty --json file.po | jq 'select(.references[]? | contains("login"))'
+
+# Pipe through LLM API
+poflow listempty --json --limit 10 file.po | \
+  llm "Translate to Swedish, output as 'EN = SV'" | \
+  poflow translate --language sv
+```
+
+## Real-World Examples
+
+### Translate Next 10 Untranslated Strings
+
+```bash
+# Get untranslated strings
+poflow listempty --json --limit 10 --language sv > to_translate.json
+
+# Have LLM translate them (manually or via API)
+cat to_translate.json | llm "Translate to Swedish" > translations.txt
+
+# Apply translations
+poflow translate --language sv translations.txt
+```
+
+### Find All Login-Related Strings
+
+```bash
+# Search by msgid
+poflow search --re "(?i)login|sign.in" file.po
+
+# Get JSON for further processing
+poflow search --json --re "(?i)login|sign.in" file.po | jq .
+```
+
+### Check Translation Coverage
+
+```bash
+# Count total entries
+total=$(poflow search --json "." file.po | wc -l)
+
+# Count untranslated
+untranslated=$(poflow listempty --json file.po | wc -l)
+
+# Calculate percentage
+echo "Translation coverage: $(( (total - untranslated) * 100 / total ))%"
+```
+
+### Batch Process Multiple Languages
+
+```bash
+for lang in sv no da fi; do
+  echo "Processing $lang..."
+  poflow listempty --json --language $lang | \
+    llm "Translate to $lang" | \
+    poflow translate --language $lang
+done
+```
+
+## Troubleshooting
+
+### Config File Not Found
+
+**Problem:** `poflow` can't find your config file.
+
+**Solution:**
+- Check config file location: `./poflow.yml` or `~/.config/poflow/config.yml`
+- Verify YAML syntax (indentation matters!)
+- Use `--config /path/to/config.yml` to specify explicitly
+
+### File Not Found with --language Flag
+
+**Problem:** `poflow translate --language sv` says file not found.
+
+**Solution:**
+- Ensure `poflow.yml` exists with `gettext_path` configured
+- Check that the resolved path exists: `{gettext_path}/{lang}/LC_MESSAGES/default.po`
+- Verify directory structure matches gettext convention
+
+### Regex Pattern Not Matching
+
+**Problem:** `poflow search --re "pattern"` returns no results.
+
+**Solution:**
+- Test your regex pattern separately (use a tool like regex101.com)
+- Remember that patterns are case-sensitive with `--re` (unless using `(?i)` flag)
+- Without `--re`, search is case-insensitive substring matching
+
+### Translation Not Applied
+
+**Problem:** `poflow translate` runs but translation doesn't appear in output.
+
+**Solution:**
+- Verify the msgid in your translation file exactly matches the msgid in the .po file
+- Check for extra whitespace or special characters
+- Use `--force` flag to see warnings about unmatched msgids
+- Ensure output is redirected correctly (stdout goes to file or pipe)
+
+### Multi-line Strings Not Parsing
+
+**Problem:** Entries with multi-line msgid or msgstr are truncated.
+
+**Solution:**
+- This is expected behavior for text output format
+- Use `--json` flag for complete multi-line string support
+- JSON output preserves exact string content with proper escaping
+
+### Performance Issues with Large Files
+
+**Problem:** Processing large .po files is slow.
+
+**Solution:**
+- Use `--limit` flag to process fewer entries
+- Redirect stdin/stdout efficiently (avoid displaying large output in terminal)
+- Use `--quiet` flag to suppress progress output
+- Consider splitting very large .po files if possible
+
+## .po File Format
+
+poflow works with GNU gettext `.po` files, which have this structure:
+
+```
+# Comment
+#: reference/to/source.ex:42
+msgid "English text"
+msgstr "Translated text"
+
+msgid "Another string"
+msgstr ""
+```
+
+### Supported Features
+
+- ✅ Single-line and multi-line strings
+- ✅ Escaped quotes and special characters
+- ✅ Comments (translator, extracted, reference)
+- ✅ Empty translations
+- ✅ msgid and msgstr parsing
+
+### Limitations
+
+- ❌ msgid_plural / msgstr[n] (plural forms)
+- ❌ msgctxt (context)
+- ❌ Fuzzy flags (#, fuzzy)
+- ❌ .pot template files (treated as .po)
+
+Plural forms and context support may be added in future versions.
+
+## Development
+
+### Building
+
+```bash
+go build -o poflow .
+```
+
+### Running Tests
+
+```bash
+go test ./...
+```
+
+### Code Structure
+
+```
+poflow/
+├── cmd/                   # Cobra commands
+│   ├── root.go           # Root command + config
+│   ├── listempty.go      # List untranslated
+│   ├── search.go         # Search by msgid
+│   ├── searchvalue.go    # Search by msgstr
+│   ├── translate.go      # Apply translations
+│   └── version.go        # Version info
+├── internal/
+│   ├── config/           # Config file handling
+│   ├── parser/           # .po file parser
+│   ├── model/            # Data structures
+│   └── util/             # Helper functions
+└── main.go               # Entry point
+```
+
+### Contributing
+
+Contributions welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure all tests pass: `go test ./...`
+5. Submit a pull request
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Author
+
+Created by Nille ([@nille](https://github.com/nille))
+
+## Links
+
+- [GitHub Repository](https://github.com/nille/poflow)
+- [Issue Tracker](https://github.com/nille/poflow/issues)
+- [GNU gettext Documentation](https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html)
+
+---
+
+**poflow** - workflow utility for gettext .po files 🌊
