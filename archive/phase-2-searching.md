@@ -1,18 +1,18 @@
 # Phase 2: Searching
 
-**Status:** Not Started
+**Status:** COMPLETED
 **Goal:** Add search and searchvalue commands with regex/substring support.
 
 ## Tasks
 
-- [ ] Implement `search` command (search in msgid)
-- [ ] Implement `searchvalue` command (search in msgstr)
-- [ ] Add --re flag for regex matching
-- [ ] Add --plain flag for substring matching (default)
-- [ ] Add --json output support
-- [ ] Add --limit flag
-- [ ] Handle case-insensitive matching
-- [ ] Write tests for search functionality
+- [x] Implement `search` command (search in msgid)
+- [x] Implement `searchvalue` command (search in msgstr)
+- [x] Add --re flag for regex matching
+- [x] Add --plain flag for substring matching (default)
+- [x] Add --json output support
+- [x] Add --limit flag
+- [x] Handle case-insensitive matching
+- [x] Write tests for search functionality
 
 ## Commands
 
