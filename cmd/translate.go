@@ -169,10 +169,22 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 		outputWriter = bufio.NewWriter(tempFile)
 	}
 
+	// Write file header first
+	headerWritten := false
+
 	for {
 		entry := p.Next()
 		if entry == nil {
 			break
+		}
+
+		// Write header before first entry
+		if !headerWritten {
+			header := p.Header()
+			for _, line := range header {
+				outputWriter.WriteString(line + "\n")
+			}
+			headerWritten = true
 		}
 
 		// Check if we have a translation for this msgid

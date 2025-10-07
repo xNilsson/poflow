@@ -11,8 +11,10 @@ import (
 
 // Parser streams .po file entries one by one without loading entire file into memory
 type Parser struct {
-	scanner *bufio.Scanner
-	err     error
+	scanner       *bufio.Scanner
+	err           error
+	header        []string // File header lines (comments before first entry)
+	headerParsed  bool
 }
 
 // NewParser creates a new streaming parser for .po files
@@ -20,6 +22,11 @@ func NewParser(r io.Reader) *Parser {
 	return &Parser{
 		scanner: bufio.NewScanner(r),
 	}
+}
+
+// Header returns the file header lines (comments before first entry)
+func (p *Parser) Header() []string {
+	return p.header
 }
 
 // Next returns the next entry from the .po file, or nil when done
@@ -31,6 +38,7 @@ func (p *Parser) Next() *model.MsgEntry {
 	var entry model.MsgEntry
 	var msgidLines []string
 	var msgstrLines []string
+	var rawLines []string // Capture original lines
 	inMsgID := false
 	inMsgStr := false
 
@@ -43,13 +51,24 @@ func (p *Parser) Next() *model.MsgEntry {
 			if entry.MsgID != "" {
 				// We have a complete entry
 				entry.MsgStr = strings.Join(msgstrLines, "")
+				entry.RawLines = rawLines
+				p.headerParsed = true
 				return &entry
+			}
+			// Capture header lines (before first entry)
+			if !p.headerParsed && len(rawLines) > 0 {
+				p.header = append(p.header, rawLines...)
+				p.header = append(p.header, "") // Include the empty line
 			}
 			// Reset state if we hit empty line without msgid
 			inMsgID = false
 			inMsgStr = false
+			rawLines = []string{}
 			continue
 		}
+
+		// Store raw line
+		rawLines = append(rawLines, line)
 
 		// Handle comments
 		if strings.HasPrefix(trimmed, "#:") {
@@ -97,6 +116,7 @@ func (p *Parser) Next() *model.MsgEntry {
 	if len(msgidLines) > 0 {
 		entry.MsgID = strings.Join(msgidLines, "")
 		entry.MsgStr = strings.Join(msgstrLines, "")
+		entry.RawLines = rawLines
 		return &entry
 	}
 

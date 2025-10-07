@@ -6,6 +6,7 @@ type MsgEntry struct {
 	MsgStr     string   `json:"msgstr"`
 	Comments   []string `json:"comments,omitempty"`
 	References []string `json:"references,omitempty"`
+	RawLines   []string `json:"-"` // Original raw lines from .po file (not included in JSON)
 }
 
 // IsEmpty returns true if the translation (msgstr) is empty
