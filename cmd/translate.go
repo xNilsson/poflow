@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
@@ -13,10 +14,11 @@ import (
 var translateFlags struct {
 	language string
 	force    bool
+	stdout   bool
 }
 
 var translateCmd = &cobra.Command{
-	Use:   "translate [po-file]",
+	Use:   "translate [po-file] [translation-file]",
 	Short: "Merge translations into a .po file",
 	Long: `Merge translations into a .po file from translation input.
 
@@ -28,16 +30,35 @@ Examples:
   Sign Out = Logga ut
   Welcome = Välkommen
 
-Usage patterns:
+BEHAVIOR:
+
+  By default, the .po file is updated IN-PLACE and a summary is shown:
+
+    $ poflow translate --language sv translations.txt
+    Resolved path: priv/gettext/sv/LC_MESSAGES/default.po
+    Loaded 2 translations
+
+    Updated 2 translation(s) in priv/gettext/sv/LC_MESSAGES/default.po:
+      ✓ Ask a question
+      ✓ Feedback
+
+  To output to stdout instead (for piping), use --stdout:
+
+    $ poflow translate --language sv translations.txt --stdout > output.po
+
+USAGE PATTERNS:
 
   # Config-based (uses poflow.yml to resolve path)
   poflow translate --language sv translations.txt
 
   # Direct file path
-  cat translations.txt | poflow translate file.po > file_new.po
+  poflow translate file.po translations.txt
 
   # From stdin translations
   echo "Sign In = Logga in" | poflow translate --language sv
+
+  # Output to stdout for piping
+  poflow translate --language sv translations.txt --stdout > new.po
 
 Config file format (poflow.yml):
   gettext_path: "priv/gettext"
@@ -50,6 +71,7 @@ func init() {
 	rootCmd.AddCommand(translateCmd)
 	translateCmd.Flags().StringVarP(&translateFlags.language, "language", "l", "", "language code (e.g., sv, en)")
 	translateCmd.Flags().BoolVarP(&translateFlags.force, "force", "f", false, "continue even if msgids not found")
+	translateCmd.Flags().BoolVar(&translateFlags.stdout, "stdout", false, "output to stdout instead of updating file in-place")
 }
 
 func runTranslate(cmd *cobra.Command, args []string) error {
@@ -80,9 +102,22 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 
 	// Determine translation input source
 	var translationInput *os.File
-	if len(args) > 1 {
-		// Translation file provided as second argument
-		f, err := os.Open(args[1])
+	var translationArg string
+
+	if translateFlags.language != "" {
+		// When using --language, the first arg (if present) is the translation file
+		if len(args) > 0 {
+			translationArg = args[0]
+		}
+	} else {
+		// When using direct path, the second arg (if present) is the translation file
+		if len(args) > 1 {
+			translationArg = args[1]
+		}
+	}
+
+	if translationArg != "" {
+		f, err := os.Open(translationArg)
 		if err != nil {
 			return fmt.Errorf("failed to open translation file: %w", err)
 		}
@@ -114,6 +149,25 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 	p := parser.NewParser(poFile)
 	notFound := []string{}
 	updated := 0
+	updatedMsgIDs := []string{}
+
+	// Determine output destination
+	var outputWriter *bufio.Writer
+	var tempFile *os.File
+
+	if translateFlags.stdout {
+		// Output to stdout
+		outputWriter = bufio.NewWriter(os.Stdout)
+	} else {
+		// Write to temp file for in-place update
+		var err error
+		tempFile, err = os.CreateTemp("", "poflow-*.po")
+		if err != nil {
+			return fmt.Errorf("failed to create temp file: %w", err)
+		}
+		defer os.Remove(tempFile.Name())
+		outputWriter = bufio.NewWriter(tempFile)
+	}
 
 	for {
 		entry := p.Next()
@@ -125,17 +179,40 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 		if newMsgStr, ok := translations[entry.MsgID]; ok {
 			entry.MsgStr = newMsgStr
 			updated++
+			updatedMsgIDs = append(updatedMsgIDs, entry.MsgID)
 			delete(translations, entry.MsgID) // Mark as found
 		}
 
 		// Output the entry (possibly updated)
-		if err := output.OutputEntry(entry, jsonOutput); err != nil {
-			return err
+		if translateFlags.stdout && jsonOutput {
+			if err := output.OutputEntry(entry, jsonOutput); err != nil {
+				return err
+			}
+		} else {
+			// Write as .po format
+			if _, err := outputWriter.WriteString(output.FormatEntry(entry)); err != nil {
+				return fmt.Errorf("failed to write entry: %w", err)
+			}
 		}
 	}
 
 	if err := p.Err(); err != nil {
 		return fmt.Errorf("error parsing .po file: %w", err)
+	}
+
+	// Flush output
+	if err := outputWriter.Flush(); err != nil {
+		return fmt.Errorf("failed to flush output: %w", err)
+	}
+
+	// If in-place mode, replace original file with temp file
+	if !translateFlags.stdout {
+		if err := tempFile.Close(); err != nil {
+			return fmt.Errorf("failed to close temp file: %w", err)
+		}
+		if err := os.Rename(tempFile.Name(), poFilePath); err != nil {
+			return fmt.Errorf("failed to replace original file: %w", err)
+		}
 	}
 
 	// Check for unfound translations
@@ -156,7 +233,13 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if !quiet {
+	// Show summary (unless quiet or stdout mode with non-JSON output)
+	if !quiet && !translateFlags.stdout {
+		fmt.Fprintf(os.Stderr, "\nUpdated %d translation(s) in %s:\n", updated, poFilePath)
+		for _, msgid := range updatedMsgIDs {
+			fmt.Fprintf(os.Stderr, "  ✓ %s\n", msgid)
+		}
+	} else if !quiet && translateFlags.stdout {
 		fmt.Fprintf(os.Stderr, "\nUpdated %d entries\n", updated)
 	}
 

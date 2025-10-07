@@ -26,38 +26,46 @@ func OutputEntryJSON(entry *model.MsgEntry) error {
 	return nil
 }
 
-// OutputEntryText outputs an entry in .po text format
-func OutputEntryText(entry *model.MsgEntry) error {
+// FormatEntry returns an entry formatted as .po text
+func FormatEntry(entry *model.MsgEntry) string {
+	var sb strings.Builder
+
 	// Output comments with # prefix
 	for _, comment := range entry.Comments {
-		fmt.Printf("# %s\n", comment)
+		sb.WriteString(fmt.Sprintf("# %s\n", comment))
 	}
 
 	// Output references with #: prefix
 	for _, ref := range entry.References {
-		fmt.Printf("#: %s\n", ref)
+		sb.WriteString(fmt.Sprintf("#: %s\n", ref))
 	}
 
 	// Output msgid (handle multi-line)
 	if strings.Contains(entry.MsgID, "\n") {
-		fmt.Println("msgid \"\"")
+		sb.WriteString("msgid \"\"\n")
 		for _, line := range strings.Split(entry.MsgID, "\n") {
-			fmt.Printf("\"%s\\n\"\n", line)
+			sb.WriteString(fmt.Sprintf("\"%s\\n\"\n", line))
 		}
 	} else {
-		fmt.Printf("msgid \"%s\"\n", entry.MsgID)
+		sb.WriteString(fmt.Sprintf("msgid \"%s\"\n", entry.MsgID))
 	}
 
 	// Output msgstr (handle multi-line)
 	if strings.Contains(entry.MsgStr, "\n") {
-		fmt.Println("msgstr \"\"")
+		sb.WriteString("msgstr \"\"\n")
 		for _, line := range strings.Split(entry.MsgStr, "\n") {
-			fmt.Printf("\"%s\\n\"\n", line)
+			sb.WriteString(fmt.Sprintf("\"%s\\n\"\n", line))
 		}
 	} else {
-		fmt.Printf("msgstr \"%s\"\n", entry.MsgStr)
+		sb.WriteString(fmt.Sprintf("msgstr \"%s\"\n", entry.MsgStr))
 	}
 
-	fmt.Println() // Blank line between entries
+	sb.WriteString("\n") // Blank line between entries
+	return sb.String()
+}
+
+// OutputEntryText outputs an entry in .po text format
+func OutputEntryText(entry *model.MsgEntry) error {
+	fmt.Print(FormatEntry(entry))
 	return nil
 }
