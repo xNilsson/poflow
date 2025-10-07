@@ -1,0 +1,24 @@
+# Test .po file for poflow
+msgid ""
+msgstr ""
+"Language: sv\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: lib/web/live/page.ex:24
+msgid "Welcome"
+msgstr "Välkommen"
+
+# This entry is not translated yet
+#: lib/web/live/page.ex:42
+msgid "Sign In"
+msgstr ""
+
+msgid "Sign Out"
+msgstr "Logga ut"
+
+# Another untranslated entry
+msgid "Profile"
+msgstr ""
+
+msgid "Settings"
+msgstr "Inställningar"

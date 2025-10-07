@@ -1,19 +1,19 @@
 # Phase 1: Core Parsing + listempty
 
-**Status:** Not Started
+**Status:** ✅ COMPLETED
 **Goal:** Implement the .po file parser and the first command (listempty).
 
 ## Tasks
 
-- [ ] Create MsgEntry struct in internal/model/entry.go
-- [ ] Implement streaming .po parser in internal/parser/po.go
-- [ ] Handle multi-line strings
-- [ ] Handle escaped quotes
-- [ ] Handle comments and references
-- [ ] Implement listempty command
-- [ ] Add --json output support
-- [ ] Add --limit flag
-- [ ] Write tests for parser
+- [x] Create MsgEntry struct in internal/model/entry.go
+- [x] Implement streaming .po parser in internal/parser/po.go
+- [x] Handle multi-line strings
+- [x] Handle escaped quotes
+- [x] Handle comments and references
+- [x] Implement listempty command
+- [x] Add --json output support
+- [x] Add --limit flag
+- [x] Write tests for parser
 
 ## Key Components
 
