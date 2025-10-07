@@ -92,7 +92,7 @@ poflow version
 
 You should see output like:
 ```
-poflow v0.1.0
+poflow v0.2.0
 ```
 
 ## Project Setup

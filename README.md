@@ -10,6 +10,7 @@ A lightweight CLI tool for working with GNU gettext `.po` translation files.
 - 🔍 **Powerful search**: Search by msgid or msgstr with regex support
 - 📝 **List untranslated**: Quickly find entries that need translation
 - 🔄 **Merge translations**: Apply translations from text files back to .po files
+- ✏️ **Edit source text**: Update msgid across all language files and templates
 - 🤖 **LLM-friendly**: JSON output and clear structure for automation
 - ⚙️ **Configurable**: Project-specific config files for easy workflow
 - 📦 **Portable**: Single Go binary with no dependencies
@@ -89,6 +90,9 @@ poflow searchvalue "Välkommen" translations.po
 
 # Apply translations from a file
 poflow translate --language sv translations.txt
+
+# Update source text (msgid) across all language files
+poflow edit "Sign In" "Log In"
 ```
 
 ## Configuration
@@ -267,6 +271,50 @@ poflow searchvalue --json "fel" file.po
 # From stdin
 cat file.po | poflow searchvalue "error"
 ```
+
+### `edit` - Update Source Text
+
+Update a msgid (source text) across all language files and templates.
+
+**Usage:**
+
+```bash
+# Update msgid across all files
+poflow edit "Sign In" "Log In"
+
+# Preview changes without modifying files
+poflow edit --dry-run "Sign In" "Log In"
+```
+
+**What it does:**
+
+1. Finds all `.po` files in your gettext directory
+2. Finds the `.pot` template file (if it exists)
+3. Updates the msgid in all matching entries
+4. Preserves translations (msgstr) exactly
+5. Shows a summary of changes
+
+**Example:**
+
+```bash
+$ poflow edit "Sign In" "Log In"
+
+  ✓ priv/gettext/sv/LC_MESSAGES/default.po (1 entries)
+  ✓ priv/gettext/en/LC_MESSAGES/default.po (1 entries)
+  ✓ priv/gettext/default.pot (1 entries)
+
+Updated 3 file(s) with 3 total entries
+```
+
+**When to use:**
+
+- You want to change the English source text
+- The change should apply to all language files
+- You need to keep translations intact
+
+**Flags:**
+
+- `--dry-run` - Preview changes without modifying files
 
 ### `translate` - Merge Translations
 
@@ -599,6 +647,11 @@ Created by Nille ([@xnilsson](https://github.com/xnilsson))
 - **[README.md](README.md)** - This file, full reference documentation
 
 ## Changelog
+
+### v0.2.0 (October 7, 2025)
+
+**Enhancements:**
+- Add `poflow edit` for changing msgid in po files and source code.
 
 ### v0.1.1 (October 7, 2025)
 

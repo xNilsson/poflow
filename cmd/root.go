@@ -25,6 +25,7 @@ Features:
   • Search by msgid or msgstr with regex support
   • List untranslated entries
   • Merge translations from text files
+  • Edit source text across all language files
   • JSON output for programmatic/LLM usage
   • Config file support for project-specific paths`,
 }

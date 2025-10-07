@@ -18,8 +18,9 @@ This tutorial covers:
 2. [Listing untranslated entries](#2-listing-untranslated-entries)
 3. [Searching for specific strings](#3-searching-for-strings)
 4. [Translating entries](#4-translating-entries)
-5. [Working with JSON output](#5-working-with-json-output)
-6. [LLM-assisted translation workflow](#6-llm-assisted-translation)
+5. [Changing source text](#5-changing-source-text)
+6. [Working with JSON output](#6-working-with-json-output)
+7. [LLM-assisted translation workflow](#7-llm-assisted-translation)
 
 ## 1. Setting Up a Project
 
@@ -345,7 +346,100 @@ This will show warnings for unmatched entries but continue processing.
 
 ---
 
-## 5. Working with JSON Output
+## 5. Changing Source Text
+
+When you need to change the English source text (msgid), the `edit` command updates it across all language files.
+
+### Why use edit?
+
+When you want to change "Sign In" to "Log In", you need to update:
+1. The msgid in Swedish `.po` file
+2. The msgid in English `.po` file
+3. The msgid in `.pot` template file
+4. All source code references
+
+The `edit` command handles steps 1-3 automatically while preserving all translations.
+
+### Preview changes with --dry-run
+
+```bash
+poflow edit --dry-run "Sign In" "Log In"
+```
+
+**Output:**
+```
+DRY RUN - No files will be modified
+
+  → priv/gettext/sv/LC_MESSAGES/default.po (1 entries)
+  → priv/gettext/en/LC_MESSAGES/default.po (1 entries)
+  → priv/gettext/default.pot (1 entries)
+
+Would update 3 file(s) with 3 total entries
+
+Run without --dry-run to apply changes
+```
+
+### Apply the changes
+
+```bash
+poflow edit "Sign In" "Log In"
+```
+
+**Output:**
+```
+  ✓ priv/gettext/sv/LC_MESSAGES/default.po (1 entries)
+  ✓ priv/gettext/en/LC_MESSAGES/default.po (1 entries)
+  ✓ priv/gettext/default.pot (1 entries)
+
+Updated 3 file(s) with 3 total entries
+```
+
+### What gets preserved
+
+**Before (sv/LC_MESSAGES/default.po):**
+```
+msgid "Sign In"
+msgstr "Logga in"
+```
+
+**After:**
+```
+msgid "Log In"
+msgstr "Logga in"
+```
+
+The translation (`msgstr`) stays exactly the same! Only the msgid changes.
+
+### When to use edit
+
+✅ **Use edit when:**
+- Changing UI text wording
+- Fixing typos in source text
+- Renaming features across all languages
+- Keeping all translations intact
+
+❌ **Don't use edit for:**
+- Adding new translations (use `translate` instead)
+- Updating existing translations (use `translate` instead)
+- Adding new entries (update your source code first)
+
+### Important notes
+
+1. **Update your code too**: After running `edit`, search your codebase for the old text and update code references:
+   ```bash
+   grep -r "Sign In" lib/ test/
+   ```
+
+2. **Exact match only**: The command matches msgid exactly (case-sensitive)
+
+3. **Use git**: Always commit before running `edit` so you can review changes:
+   ```bash
+   git diff priv/gettext/
+   ```
+
+---
+
+## 6. Working with JSON Output
 
 All commands support `--json` for structured output.
 
@@ -408,7 +502,7 @@ poflow search --json "Welcome" test.po | jq .
 
 ---
 
-## 6. LLM-Assisted Translation
+## 7. LLM-Assisted Translation
 
 poflow is designed to work seamlessly with LLMs for translation.
 
@@ -496,7 +590,7 @@ poflow listempty --json --limit 10 --language sv | \
 
 ---
 
-## 7. Real-World Workflows
+## 8. Real-World Workflows
 
 ### Workflow 1: Translate next 20 entries
 
@@ -574,7 +668,7 @@ done
 
 ---
 
-## 8. Advanced Tips
+## 9. Advanced Tips
 
 ### Tip 1: Quiet mode
 
