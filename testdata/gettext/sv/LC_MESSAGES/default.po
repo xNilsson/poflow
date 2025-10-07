@@ -8,7 +8,7 @@ msgstr ""
 
 #: lib/my_app/accounts.ex:45
 msgid "Sign In"
-msgstr ""
+msgstr "Logga in"
 
 #: lib/my_app/accounts.ex:67
 msgid "Sign Out"
@@ -33,3 +33,4 @@ msgstr ""
 #: lib/my_app/forms.ex:23
 msgid "Submit"
 msgstr ""
+

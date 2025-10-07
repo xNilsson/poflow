@@ -275,10 +275,32 @@ Each line should be: `msgid = msgstr`
 
 ### Apply translations
 
-Using config file (recommended):
+**Method 1: Using translation file (positional argument)**
 
 ```bash
 poflow translate --language sv translations.txt > updated.po
+```
+
+**Method 2: Using --file flag (explicit)**
+
+```bash
+poflow translate --language sv -F translations.txt > updated.po
+poflow translate --language sv --file translations.txt > updated.po
+```
+
+**Method 3: Using heredoc (no file needed)**
+
+```bash
+poflow translate --language sv > updated.po <<EOF
+Sign In = Logga in
+Profile = Profil
+EOF
+```
+
+**Method 4: Using pipe**
+
+```bash
+echo "Sign In = Logga in" | poflow translate --language sv > updated.po
 ```
 
 **Input file (test.po):**
@@ -299,7 +321,7 @@ msgid "Profile"
 msgstr "Profil"
 ```
 
-### From stdin
+### From stdin with pipe
 
 ```bash
 echo "Sign In = Logga in" | poflow translate test.po > updated.po
@@ -441,11 +463,21 @@ Profile = Profil
 
 ### Step 5: Apply translations
 
+**Using translation file:**
 ```bash
 poflow translate --language sv translations.txt > updated.po
+poflow translate --language sv -F translations.txt > updated.po
 ```
 
-**Or update in place:**
+**Using heredoc (no file needed):**
+```bash
+poflow translate --language sv > updated.po <<EOF
+Sign In = Logga in
+Profile = Profil
+EOF
+```
+
+**Update in place:**
 ```bash
 poflow translate --language sv translations.txt > temp.po && mv temp.po priv/gettext/sv/LC_MESSAGES/default.po
 ```

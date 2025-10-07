@@ -15,6 +15,7 @@ var translateFlags struct {
 	language string
 	force    bool
 	stdout   bool
+	file     string
 }
 
 var translateCmd = &cobra.Command{
@@ -50,11 +51,19 @@ USAGE PATTERNS:
 
   # Config-based (uses poflow.yml to resolve path)
   poflow translate --language sv translations.txt
+  poflow translate --language sv --file translations.txt
+  poflow translate --language sv -F translations.txt
 
   # Direct file path
   poflow translate file.po translations.txt
 
-  # From stdin translations
+  # From stdin using heredoc
+  poflow translate --language sv <<EOF
+  Sign In = Logga in
+  Sign Out = Logga ut
+  EOF
+
+  # From stdin using pipe
   echo "Sign In = Logga in" | poflow translate --language sv
 
   # Output to stdout for piping
@@ -72,6 +81,7 @@ func init() {
 	translateCmd.Flags().StringVarP(&translateFlags.language, "language", "l", "", "language code (e.g., sv, en)")
 	translateCmd.Flags().BoolVarP(&translateFlags.force, "force", "f", false, "continue even if msgids not found")
 	translateCmd.Flags().BoolVar(&translateFlags.stdout, "stdout", false, "output to stdout instead of updating file in-place")
+	translateCmd.Flags().StringVarP(&translateFlags.file, "file", "F", "", "translation file (alternative to positional arg)")
 }
 
 func runTranslate(cmd *cobra.Command, args []string) error {
@@ -104,7 +114,10 @@ func runTranslate(cmd *cobra.Command, args []string) error {
 	var translationInput *os.File
 	var translationArg string
 
-	if translateFlags.language != "" {
+	// Priority: --file flag > positional args > stdin
+	if translateFlags.file != "" {
+		translationArg = translateFlags.file
+	} else if translateFlags.language != "" {
 		// When using --language, the first arg (if present) is the translation file
 		if len(args) > 0 {
 			translationArg = args[0]

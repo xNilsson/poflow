@@ -282,14 +282,24 @@ Welcome = Välkommen
 **Usage:**
 
 ```bash
-# Using config file (recommended)
+# Using config file with translation file
 poflow translate --language sv translations.txt
+
+# Using --file / -F flag (explicit)
+poflow translate --language sv -F translations.txt
+poflow translate --language sv --file translations.txt
+
+# Using heredoc (no file needed)
+poflow translate --language sv <<EOF
+Sign In = Logga in
+Sign Out = Logga ut
+EOF
+
+# Using pipe
+echo "Sign In = Logga in" | poflow translate --language sv
 
 # Direct file path
 poflow translate file.po < translations.txt > file_new.po
-
-# From stdin
-echo "Sign In = Logga in" | poflow translate --language sv
 
 # Force mode (continue even if msgid not found)
 poflow translate --force --language sv translations.txt
@@ -587,6 +597,38 @@ Created by Nille ([@nille](https://github.com/nille))
 - **[INSTALLATION.md](INSTALLATION.md)** - Complete installation and setup guide
 - **[TUTORIAL.md](TUTORIAL.md)** - Step-by-step tutorial with real examples
 - **[README.md](README.md)** - This file, full reference documentation
+
+## Changelog
+
+### v0.1.1 (October 7, 2025)
+
+**Enhancements:**
+- Added `--file` / `-F` flag to `translate` command for explicit file input specification
+- Updated help text with heredoc and pipe examples for stdin input
+- Documentation improvements across README, INSTALLATION, and TUTORIAL
+
+**Bug Fixes:**
+- Fixed multi-line string output in text format for all commands
+- Fixed comment output to include proper `# ` prefix
+- Fixed JSON output to use `encoding/json` for proper escaping
+- Deduplicated output functions into shared `internal/output` package
+
+**Internal:**
+- Created `internal/output/output.go` with shared output functions
+- Removed ~100 lines of duplicated code across commands
+- Improved code maintainability and consistency
+
+### v0.1.0 (October 7, 2025)
+
+Initial release with core features:
+- `listempty` - List untranslated entries
+- `search` - Search by msgid
+- `searchvalue` - Search by msgstr
+- `translate` - Merge translations into .po files
+- JSON output support for all commands
+- Config file support (YAML/JSON)
+- Streaming parser for efficient processing
+- Full documentation and tutorial
 
 ## Links
 

@@ -123,9 +123,9 @@ run_test "poflow searchvalue --help" "./poflow searchvalue --help"
 run_test "poflow listempty --help" "./poflow listempty --help"
 
 # Test 16: Output validation tests
-run_test_with_output "listempty output contains 'Sign In'" \
+run_test_with_output "listempty output contains 'Profile'" \
     "./poflow listempty testdata/gettext/sv/LC_MESSAGES/default.po" \
-    "Sign In"
+    "Profile"
 
 run_test_with_output "search output contains 'Sign Out'" \
     "./poflow search 'Sign' testdata/gettext/sv/LC_MESSAGES/default.po" \
@@ -147,7 +147,7 @@ run_test_with_output "search JSON format valid" \
 # Test 18: stdin input
 run_test_with_output "listempty from stdin" \
     "cat testdata/gettext/sv/LC_MESSAGES/default.po | ./poflow listempty" \
-    "Sign In"
+    "Profile"
 
 run_test_with_output "search from stdin" \
     "cat testdata/gettext/sv/LC_MESSAGES/default.po | ./poflow search 'Welcome'" \

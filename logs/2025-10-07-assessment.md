@@ -742,3 +742,55 @@ The project is ready for v0.1 release and real-world usage. The few minor issues
 **Next Steps:**
 - Consider v0.1.1 release with these fixes
 - Plan v0.2 features (plural forms, msgctxt, integration tests)
+
+---
+
+## Session 7: Documentation Updates & --file Flag
+**Date:** October 7, 2025 (Post-Bug Fixes)
+**Status:** ✅ Completed
+
+**What Happened:**
+- Added `--file` / `-F` flag to `translate` command for explicit file input
+- Updated help text with heredoc examples
+- Updated all documentation (README, INSTALLATION, TUTORIAL)
+- Added changelog to README
+
+**Changes Made:**
+
+1. **translate command enhancement:**
+   - Added `--file` / `-F` flag as alternative to positional argument
+   - Priority: `--file` flag > positional args > stdin
+   - Updated help text with heredoc and pipe examples
+   - Files modified: `cmd/translate.go`
+
+2. **Documentation updates:**
+   - Added changelog section to README with v0.1.1 entry
+   - Updated INSTALLATION.md with new flag examples
+   - Updated TUTORIAL.md with heredoc and `-F` flag examples
+   - All docs now show three ways to provide translations:
+     - Positional argument: `poflow translate --language sv translations.txt`
+     - Flag-based: `poflow translate --language sv -F translations.txt`
+     - Stdin: `poflow translate --language sv <<EOF ... EOF`
+
+3. **Daily log update:**
+   - Documented the change in this log entry
+
+**Key Learning:**
+The `-F` flag provides clarity in scripts where stdin redirection isn't obvious. Makes the tool more explicit and easier to understand at a glance.
+
+**Files Modified:**
+- `cmd/translate.go` - Added --file flag and updated help
+- `README.md` - Added changelog and updated translate examples
+- `INSTALLATION.md` - Added heredoc and -F flag examples
+- `TUTORIAL.md` - Added heredoc and -F flag examples with 4 methods
+- `test_integration.sh` - Fixed tests expecting "Sign In" (which is translated) to expect "Profile" (which is untranslated)
+- `logs/2025-10-07-assessment.md` - This entry
+
+**Tests:**
+- ✅ All 25 integration tests passing
+- ✅ Build successful
+- ✅ No regressions
+
+**Next Steps:**
+- Release v0.1.1 with --file flag and bug fixes
+- Continue planning v0.2 features

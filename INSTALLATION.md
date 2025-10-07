@@ -281,6 +281,15 @@ poflow listempty priv/gettext/sv/LC_MESSAGES/default.po
 
 # From stdin
 cat priv/gettext/sv/LC_MESSAGES/default.po | poflow listempty
+
+# Translate with explicit file flag
+poflow translate priv/gettext/sv/LC_MESSAGES/default.po -F translations.txt
+
+# Translate using heredoc (no file needed)
+poflow translate priv/gettext/sv/LC_MESSAGES/default.po <<EOF
+Sign In = Logga in
+Sign Out = Logga ut
+EOF
 ```
 
 However, using a config file is recommended for convenience.
