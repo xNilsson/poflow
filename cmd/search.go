@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/nille/poflow/internal/config"
 	"github.com/nille/poflow/internal/output"
 	"github.com/nille/poflow/internal/parser"
 	"github.com/spf13/cobra"
@@ -31,12 +32,14 @@ Examples:
 var searchFlags struct {
 	useRegex bool
 	limit    int
+	language string
 }
 
 func init() {
 	rootCmd.AddCommand(searchCmd)
 	searchCmd.Flags().BoolVar(&searchFlags.useRegex, "re", false, "use regex pattern matching")
 	searchCmd.Flags().IntVar(&searchFlags.limit, "limit", 0, "maximum number of entries to output (0 = no limit)")
+	searchCmd.Flags().StringVar(&searchFlags.language, "language", "", "language code (uses config to resolve path)")
 }
 
 func runSearch(cmd *cobra.Command, args []string) error {
@@ -57,7 +60,24 @@ func runSearch(cmd *cobra.Command, args []string) error {
 
 	// Determine input source
 	var reader *os.File
-	if len(args) == 2 {
+
+	// Handle --language flag
+	if searchFlags.language != "" {
+		cfg, cfgErr := config.Load()
+		if cfgErr != nil {
+			return fmt.Errorf("failed to load config: %w", cfgErr)
+		}
+		path, pathErr := cfg.ResolvePOPath(searchFlags.language)
+		if pathErr != nil {
+			return fmt.Errorf("failed to resolve path: %w", pathErr)
+		}
+		var openErr error
+		reader, openErr = os.Open(path)
+		if openErr != nil {
+			return fmt.Errorf("failed to open file: %w", openErr)
+		}
+		defer reader.Close()
+	} else if len(args) == 2 {
 		// File input
 		reader, err = os.Open(args[1])
 		if err != nil {

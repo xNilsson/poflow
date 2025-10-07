@@ -529,9 +529,21 @@ go build -o poflow .
 
 ### Running Tests
 
+**Unit Tests:**
 ```bash
 go test ./...
 ```
+
+**Integration Tests:**
+```bash
+./test_integration.sh
+```
+
+The integration test suite validates all commands from the TUTORIAL.md with real test data. It includes:
+- All command flags (--json, --limit, --language, --re)
+- File and stdin input modes
+- Output format validation
+- Config file resolution
 
 ### Code Structure
 

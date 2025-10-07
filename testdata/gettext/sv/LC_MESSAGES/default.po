@@ -1,0 +1,35 @@
+# Swedish translation file
+# Test fixture for integration tests
+
+msgid ""
+msgstr ""
+"Language: sv\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: lib/my_app/accounts.ex:45
+msgid "Sign In"
+msgstr ""
+
+#: lib/my_app/accounts.ex:67
+msgid "Sign Out"
+msgstr "Logga ut"
+
+#: lib/my_app/accounts.ex:89
+msgid "Profile"
+msgstr ""
+
+#: lib/my_app/welcome.ex:12
+msgid "Welcome"
+msgstr "Välkommen"
+
+#: lib/my_app/questions.ex:34
+msgid "Ask a question"
+msgstr "Ställ en fråga"
+
+#: lib/my_app/buttons.ex:56
+msgid "Click here"
+msgstr ""
+
+#: lib/my_app/forms.ex:23
+msgid "Submit"
+msgstr ""
